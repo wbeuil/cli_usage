@@ -1,0 +1,5 @@
+*.o
+*.a
+a.out
+a.out.dSYM
+example.dSYM
