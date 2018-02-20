@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 12:02:18 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:37:35 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:50:50 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ static t_section	*new_section(char *header, char *content, t_opt_list *options_l
 {
 	t_section		*section;
 
-	section = (t_section *)malloc(sizeof(*section));
+	if (!(section = (t_section *)malloc(sizeof(*section))))
+		return (NULL);
 	section->header = header;
 	section->content = content;
 	section->options_list = options_list;
@@ -81,8 +82,10 @@ void				add_section(t_section **sections, char *header, char *content, t_opt_lis
 		section = *sections;
 		while (section->next)
 			section = section->next;
-		section->next = new_section(header, content, options_list);
+		if (!(section->next = new_section(header, content, options_list)))
+			fail_malloc();
 	}
 	else
-		*sections = new_section(header, content, options_list);
+		if (!(*sections = new_section(header, content, options_list)))
+			fail_malloc();
 }

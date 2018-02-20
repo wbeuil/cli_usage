@@ -6,7 +6,7 @@
 #    By: William <wbeuil@student.42.fr>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/13 11:26:47 by William           #+#    #+#              #
-#    Updated: 2018/02/16 12:12:05 by William          ###   ########.fr        #
+#    Updated: 2018/02/20 12:56:25 by William          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC			=	gcc
 
 RM			=	/bin/rm -f
 
-CFLAGS		=	-Wall -Wextra -Werror -g
+CFLAGS		=	-Wall -Wextra -Werror
 
 DIR			=	./srcs
 

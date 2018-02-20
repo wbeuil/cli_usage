@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/14 11:10:01 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:17:38 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:54:03 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,15 @@
 #include <string.h>
 #include <stdio.h>
 
+/*
+** Print into two columns option's definitions and option's description.
+*/
+
 void					print_options(t_opt_list *options_list, char **options)
 {
-	t_def			*defs;
-	size_t			option_width;
-	size_t			i;
+	t_def				*defs;
+	size_t				option_width;
+	size_t				i;
 
 	option_width = max_length(options);
 	i = -1;
@@ -33,6 +37,10 @@ void					print_options(t_opt_list *options_list, char **options)
 	}
 }
 
+/*
+** After a new line, print spaces for padding.
+*/
+
 static void				new_line_padding(size_t padding)
 {
 	size_t				i;
@@ -42,6 +50,11 @@ static void				new_line_padding(size_t padding)
 		printf(" ");
 }
 
+/*
+** Word wrap with multiple words so that it will be displayed
+** in multiple lines.
+*/
+
 static void				multiple_words(char *content, size_t size_column)
 {
 	size_t				i;
@@ -49,7 +62,8 @@ static void				multiple_words(char *content, size_t size_column)
 	size_t				len;
 	char				**words;
 
-	words = strsplit(content, ' ');
+	if (!(words = strsplit(content, ' ')))
+		fail_malloc();
 	i = -1;
 	size = 2;
 	printf("  ");
@@ -68,6 +82,11 @@ static void				multiple_words(char *content, size_t size_column)
 	free_array(words);
 }
 
+/*
+** If there is only one word, we need to cut it after the 80th
+** character.
+*/
+
 static void				single_word(char *content, size_t size_column)
 {
 	size_t				start;
@@ -80,7 +99,8 @@ static void				single_word(char *content, size_t size_column)
 	while (start < len)
 	{
 		size = MIN(size_column - PADDING, len - start);
-		line = strndup(content + start, size);
+		if (!(line = strndup(content + start, size)))
+			fail_malloc();
 		printf("  %s ", line);
 		free(line);
 		start += size;
@@ -92,6 +112,11 @@ static void				single_word(char *content, size_t size_column)
 	}
 }
 
+/*
+** If the content is higher than 80 characters, we need to split it
+** into multiple lines.
+*/
+
 void					word_wrap(char *content, size_t size_column)
 {
 	size_t				i;
@@ -101,7 +126,8 @@ void					word_wrap(char *content, size_t size_column)
 		single_word(content, size_column);
 	else if (strchr(content, '\n'))
 	{
-		lines = strsplit(content, '\n');
+		if (!(lines = strsplit(content, '\n')))
+			fail_malloc();
 		i = -1;
 		while (lines[++i])
 		{

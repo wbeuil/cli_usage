@@ -6,11 +6,15 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 14:08:09 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:40:24 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:54:39 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cli_usage.h"
+
+/*
+** Find if the character is our delimiter.
+*/
 
 static int	is_delimited(char letter, char c)
 {
@@ -18,6 +22,10 @@ static int	is_delimited(char letter, char c)
 		return (1);
 	return (0);
 }
+
+/*
+** Simply fill the array of string with each character.
+*/
 
 static char	**fill_table(char **tab, char const *s, char c)
 {
@@ -45,6 +53,10 @@ static char	**fill_table(char **tab, char const *s, char c)
 	return (tab);
 }
 
+/*
+** Allocate memory depending on the number of characters.
+*/
+
 static char	**malloc_word(char **tab, char const *s, char c)
 {
 	int		i;
@@ -64,12 +76,17 @@ static char	**malloc_word(char **tab, char const *s, char c)
 		if ((is_delimited(s[i], c) || s[i] == '\0')
 			&& !(is_delimited(s[i - 1], c)))
 		{
-			tab[j++] = (char *)malloc(sizeof(**tab) * (k + 1));
+			if (!(tab[j++] = (char *)malloc(sizeof(**tab) * (k + 1))))
+				return (NULL);
 			k = 0;
 		}
 	}
 	return (tab);
 }
+
+/*
+** Count the number of words delimited by a character.
+*/
 
 static int	count_words(char const *s, char c)
 {
@@ -90,6 +107,10 @@ static int	count_words(char const *s, char c)
 	return (count);
 }
 
+/*
+** Split string depending on a character.
+*/
+
 char		**strsplit(char const *s, char c)
 {
 	int		count;
@@ -98,9 +119,11 @@ char		**strsplit(char const *s, char c)
 	if (!s)
 		return (NULL);
 	count = count_words(s, c);
-	tab = (char **)malloc(sizeof(*tab) * (count + 1));
+	if (!(tab = (char **)malloc(sizeof(*tab) * (count + 1))))
+		return (NULL);
 	tab[count] = NULL;
-	tab = malloc_word(tab, s, c);
+	if (!(tab = malloc_word(tab, s, c)))
+		return (NULL);
 	tab = fill_table(tab, s, c);
 	return (tab);
 }

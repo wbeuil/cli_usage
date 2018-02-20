@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   definitions.c                                      :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/14 15:33:25 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 11:58:52 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:43:14 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ t_opt_list			*init_options_list(t_def *option_defs, size_t size)
 {
 	t_opt_list		*options_list;
 
-	options_list = (t_opt_list *)malloc(sizeof(*options_list));
+	if (!(options_list = (t_opt_list *)malloc(sizeof(*options_list))))
+		fail_malloc();
 	options_list->option_defs = option_defs;
 	options_list->size = size;
 	return (options_list);
@@ -35,7 +36,8 @@ t_def				*init_option_defs(size_t size)
 	t_def			*option_defs;
 	size_t			i;
 
-	option_defs = (t_def *)malloc(sizeof(*option_defs) * (size));
+	if (!(option_defs = (t_def *)malloc(sizeof(*option_defs) * (size))))
+		fail_malloc();
 	i = -1;
 	while (++i < size)
 		option_defs[i] = add_def(NULL, NULL, OPT_INIT);

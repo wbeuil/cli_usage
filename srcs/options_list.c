@@ -6,12 +6,17 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/14 16:10:14 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:10:33 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:48:18 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cli_usage.h"
 #include <string.h>
+
+/*
+** Find the maximum length the option column has depending on
+** the size of the formated string.
+*/
 
 size_t				max_length(char **rows)
 {
@@ -30,17 +35,23 @@ size_t				max_length(char **rows)
 	return (maxlen);
 }
 
+/*
+** Concatenate the string given the format.
+*/
+
 static char			*concatenated_string(char *format, char *name, char *alias, char *type)
 {
+	strcpy(format, "\e[1m");
 	if (alias)
 	{
-		strcpy(format, "-");
+		strcat(format, "-");
 		strcat(format, alias);
 		strcat(format, ", --");
 	}
 	else
-		strcpy(format, "--");
+		strcat(format, "--");
 	strcat(format, name);
+	strcat(format, "\e[0m");
 	strcat(format, " ");
 	if (strlen(type) > 0)
 		strcat(format, "[");
@@ -50,6 +61,11 @@ static char			*concatenated_string(char *format, char *name, char *alias, char *
 	return (format);
 }
 
+/*
+** Calculat the size of the formated string, allocate memory
+** and call the concatened function.
+*/
+
 static char			*format_string(char *name, char *alias, char *type)
 {
 	char			*format;
@@ -57,15 +73,20 @@ static char			*format_string(char *name, char *alias, char *type)
 
 	if (!name)
 		name = "undefined";
-	size = alias ? (strlen(alias) + strlen(name) + strlen(type) + 6)
-	: (strlen(name) + strlen(type) + 3);
+	size = alias ? (strlen(alias) + strlen(name) + strlen(type) + 6 + 8)
+	: (strlen(name) + strlen(type) + 3 + 8);
 	if (strlen(type) > 0)
 		size += 2;
-	format = (char *)malloc(sizeof(*format) * (size + 1));
+	if (!(format = (char *)malloc(sizeof(*format) * (size + 1))))
+		return (NULL);
 	format[size] = '\0';
 	concatenated_string(format, name, alias, type);
 	return (format);
 }
+
+/*
+** We write a type label depending on the type of the option.
+*/
 
 static char			*type_label(t_def def)
 {
@@ -89,6 +110,12 @@ static char			*type_label(t_def def)
 	return ("");
 }
 
+/*
+** For each options, we create a new row with a special format.
+** -(alias), --(name) [type]
+** and store them in an array.
+*/
+
 char				**options_rows(t_opt_list *options_list)
 {
 	t_def			*defs;
@@ -96,7 +123,8 @@ char				**options_rows(t_opt_list *options_list)
 	char			*type;
 	size_t			i;
 
-	rows = (char **)malloc(sizeof(*rows) * (options_list->size + 1));
+	if (!(rows = (char **)malloc(sizeof(*rows) * (options_list->size + 1))))
+		return (NULL);
 	rows[options_list->size] = NULL;
 	i = -1;
 	defs = options_list->option_defs;
@@ -107,6 +135,8 @@ char				**options_rows(t_opt_list *options_list)
 			rows[i] = format_string(defs[i].name, defs[i].alias, type);
 		else
 			rows[i] = format_string(defs[i].name, NULL, type);
+		if (!rows[i])
+			return (NULL);
 	}
 	return (rows);
 }

@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 12:02:53 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:34:23 by William          ###   ########.fr       */
+/*   Updated: 2018/02/20 12:45:57 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,13 @@ static void			options_list_section(t_section *section)
 
 	if (section->header)
 	{
-		printf("%s", section->header);
+		printf("\e[1;4m%s\e[0m", section->header);
 		empty_line();
 	}
-	options = options_rows(section->options_list);
-	if (options)
-	{
-		print_options(section->options_list, options);
-		free_array(options);
-	}
+	if (!(options = options_rows(section->options_list)))
+		fail_malloc();
+	print_options(section->options_list, options);
+	free_array(options);
 	empty_line();
 }
 
@@ -44,7 +42,7 @@ static void			content_section(t_section *section)
 {
 	if (section->header)
 	{
-		printf("%s", section->header);
+		printf("\e[1;4m%s\e[0m", section->header);
 		empty_line();
 	}
 	if (section->content)
