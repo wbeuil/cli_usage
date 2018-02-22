@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 12:07:02 by William           #+#    #+#             */
-/*   Updated: 2018/02/20 12:55:15 by William          ###   ########.fr       */
+/*   Updated: 2018/02/22 16:18:31 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,6 @@ void				free_array(char **array)
 	while (array[++i])
 		free(array[i]);
 	free(array);
-}
-
-/*
-** Print an empty line.
-*/
-
-void				empty_line(void)
-{
-	printf("\n\n");
 }
 
 /*

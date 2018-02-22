@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 11:31:38 by William           #+#    #+#             */
-/*   Updated: 2018/02/16 12:18:48 by William          ###   ########.fr       */
+/*   Updated: 2018/02/22 16:19:56 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@
 
 typedef enum			e_type
 {
-	OPT_INIT	= -1,
-	OPT_NULL	= 0,
-	OPT_BOOLEAN	= 1,
-	OPT_INTEGER	= 2,
-	OPT_STRING	= 3
+	OPT_INIT			= -1,
+	OPT_NULL			= 0,
+	OPT_BOOLEAN			= 1,
+	OPT_INTEGER			= 2,
+	OPT_STRING			= 3
 }						t_type;
 
 typedef struct			s_def
@@ -60,14 +60,13 @@ typedef struct			s_section
 ** Main function
 */
 
-void					command_line_usage(t_section *sections);
+char					*command_line_usage(t_section *sections);
 
 /*
 ** Utilities functions
 */
 
 void					fail_malloc(void);
-void					empty_line(void);
 void					free_array(char **array);
 char					**strsplit(char const *s, char c);
 
@@ -80,12 +79,32 @@ void					add_section(t_section **sections, char *header,
 size_t					length_sections(t_section **sections);
 void					free_sections(t_section **sections);
 
+
+/*
+** Section functions
+*/
+
+char					*join_content(char *content, char *new);
+char					*add_content(char *section_content, char *content, size_t size_column);
+char					*add_options_list(t_section *section, char *options_list, char **options);
+char					*add_header(t_section *section);
+
 /*
 ** Content functions
 */
 
-void					word_wrap(char *content, size_t size_column);
-void					print_options(t_opt_list *options_list, char **options);
+char					*single_word(char *content, size_t size_column);
+char					*multiple_words(char *content, size_t size_column);
+char					*multiple_lines(char *content, size_t size_column);
+
+/*
+** Content utilities functions
+*/
+
+char					*new_line(char *content);
+char					*empty_line(char *content);
+char					*add_padding(char *content, size_t padding);
+char					*add_word(char *content, char *new);
 
 /*
 ** Init functions

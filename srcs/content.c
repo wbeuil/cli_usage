@@ -6,48 +6,74 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/14 11:10:01 by William           #+#    #+#             */
-/*   Updated: 2018/02/20 12:54:03 by William          ###   ########.fr       */
+/*   Updated: 2018/02/22 16:27:01 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cli_usage.h"
 #include <string.h>
-#include <stdio.h>
 
 /*
-** Print into two columns option's definitions and option's description.
+** Add an array of string with a special format when we have a section
+** with multiples lines.
+** content = "First line\nSecond Line"
 */
 
-void					print_options(t_opt_list *options_list, char **options)
+char				*multiple_lines(char *content, size_t size_column)
 {
-	t_def				*defs;
-	size_t				option_width;
-	size_t				i;
+	size_t			i;
+	char			*tmp;
+	char			**lines;
 
-	option_width = max_length(options);
 	i = -1;
-	defs = options_list->option_defs;
-	while (++i < options_list->size)
+	tmp = NULL;
+	if (!(lines = strsplit(content, '\n')))
+		fail_malloc();
+	while (lines[++i])
 	{
-		printf("  %-*s ", (int)option_width, options[i]);
-		if (defs[i].description)
-			word_wrap(defs[i].description, MAXWIDTH - (option_width + PADDING));
-		if (i + 1 < options_list->size)
-			printf("\n");
+		if (!strchr(lines[i], ' '))
+			tmp = join_content(tmp, single_word(lines[i], size_column));
+		else
+		{
+			tmp = join_content(tmp, multiple_words(lines[i], size_column));
+			if (lines[i + 1])
+				tmp = new_line(tmp);
+		}
 	}
+	free_array(lines);
+	return (tmp);
 }
 
 /*
-** After a new line, print spaces for padding.
+** Concatenate all the words given the array and the size_column.
 */
 
-static void				new_line_padding(size_t padding)
+static char			*concatenated_words(char *content, size_t size_column, char **words)
 {
-	size_t				i;
+	size_t			i;
+	size_t			len;
+	size_t			size;
+	char			*tmp;
 
 	i = -1;
-	while (++i < padding)
-		printf(" ");
+	size = 0;
+	tmp = NULL;
+	while (words[++i])
+	{
+		len = strlen(words[i]);
+		if (len + size > size_column - PADDING)
+		{
+			tmp = new_line(tmp);
+			tmp = add_padding(tmp, MAXWIDTH - size_column + 2);
+			size = 0;
+		}
+		tmp = add_word(tmp, strdup(words[i]));
+		size += (len + 1);
+	}
+	if (!tmp && content && len == 0)
+		if (!(tmp = strdup(content)))
+			fail_malloc();
+	return (tmp);
 }
 
 /*
@@ -55,31 +81,16 @@ static void				new_line_padding(size_t padding)
 ** in multiple lines.
 */
 
-static void				multiple_words(char *content, size_t size_column)
+char				*multiple_words(char *content, size_t size_column)
 {
-	size_t				i;
-	size_t				size;
-	size_t				len;
-	char				**words;
+	char			**words;
+	char			*tmp;
 
 	if (!(words = strsplit(content, ' ')))
 		fail_malloc();
-	i = -1;
-	size = 2;
-	printf("  ");
-	while (words[++i])
-	{
-		len = strlen(words[i]);
-		if (len + size > size_column - PADDING)
-		{
-			printf("\n  ");
-			new_line_padding(MAXWIDTH - size_column);
-			size = 2;
-		}
-		printf("%s ", words[i]);
-		size += (len + 1);
-	}
+	tmp = concatenated_words(content, size_column, words);
 	free_array(words);
+	return (tmp);
 }
 
 /*
@@ -87,61 +98,29 @@ static void				multiple_words(char *content, size_t size_column)
 ** character.
 */
 
-static void				single_word(char *content, size_t size_column)
+char				*single_word(char *content, size_t size_column)
 {
-	size_t				start;
-	size_t				size;
-	size_t				len;
-	char				*line;
+	size_t			start;
+	size_t			size;
+	size_t			len;
+	char			*tmp;
 
 	start = 0;
+	tmp = NULL;
 	len = strlen(content);
 	while (start < len)
 	{
 		size = MIN(size_column - PADDING, len - start);
-		if (!(line = strndup(content + start, size)))
-			fail_malloc();
-		printf("  %s ", line);
-		free(line);
+		tmp = add_word(tmp, strndup(content + start, size));
 		start += size;
 		if (start < len)
 		{
-			printf("\n");
-			new_line_padding(MAXWIDTH - size_column);
+			tmp = new_line(tmp);
+			tmp = add_padding(tmp, MAXWIDTH - size_column + 2);
 		}
 	}
-}
-
-/*
-** If the content is higher than 80 characters, we need to split it
-** into multiple lines.
-*/
-
-void					word_wrap(char *content, size_t size_column)
-{
-	size_t				i;
-	char				**lines;
-
-	if (!strchr(content, ' ') && !strchr(content, '\n'))
-		single_word(content, size_column);
-	else if (strchr(content, '\n'))
-	{
-		if (!(lines = strsplit(content, '\n')))
+	if (!tmp && content && len == 0)
+		if (!(tmp = strdup(content)))
 			fail_malloc();
-		i = -1;
-		while (lines[++i])
-		{
-			if (!strchr(lines[i], ' '))
-				single_word(lines[i], size_column);
-			else
-			{
-				multiple_words(lines[i], size_column);
-				if (lines[i + 1])
-					printf("\n");
-			}
-		}
-		free_array(lines);
-	}
-	else
-		multiple_words(content, size_column);
+	return (tmp);
 }

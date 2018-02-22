@@ -6,11 +6,12 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/13 11:27:05 by William           #+#    #+#             */
-/*   Updated: 2018/02/20 12:35:54 by William          ###   ########.fr       */
+/*   Updated: 2018/02/22 16:01:16 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./includes/cli_usage.h"
+#include <stdio.h>
 
 /*
 ** Initialize options definitions to print an options' list.
@@ -40,10 +41,11 @@ static t_def		*new_option_definitions(int size)
 
 int					main(void)
 {
-	t_section		*sections;
 	size_t			size;
+	t_section		*sections;
 	t_def			*option_defs;
 	t_opt_list		*options_list;
+	char			*usage;
 
 	sections = NULL;
 	size = 3;
@@ -56,6 +58,8 @@ intended solely to demonstrate description appearance.", NULL);
 							"This is a rather long, but ultimately inconsequential "
 							"description intended solely to demonstrate description appearance.", NULL);*/
 	add_section(&sections, "Options", NULL, options_list);
-	command_line_usage(sections);
+	usage = command_line_usage(sections);
+	printf("%s", usage);
+	free(usage);
 	return (0);
 }

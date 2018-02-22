@@ -2,7 +2,7 @@
 A simple module for creating a usage guide. This module is inspired by [command-line-usage](https://github.com/75lb/command-line-usage).
 
 ## Getting Started
-To see an example, just call the first rule of the Makefile:
+Before using the library (cli_usage.a), you need to create it with:
 ```
 $ make
 ```
@@ -34,10 +34,15 @@ add_section(&sections, "Options", NULL, options_list);
 
 This section data is passed to command_line_usage() which renders the usage guide.
 ```
-command_line_usage(sections);
+usage = command_line_usage(sections);
 ```
 
 ![usage](https://github.com/wbeuil/cli_usage/raw/master/example.png)
+
+Finally don't forget to free the usage variable when you don't need it anymore:
+```
+free(usage);
+```
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

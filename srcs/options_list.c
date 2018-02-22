@@ -6,7 +6,7 @@
 /*   By: William <wbeuil@student.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/14 16:10:14 by William           #+#    #+#             */
-/*   Updated: 2018/02/20 12:48:18 by William          ###   ########.fr       */
+/*   Updated: 2018/02/22 14:24:31 by William          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char			*concatenated_string(char *format, char *name, char *alias, char *
 	else
 		strcat(format, "--");
 	strcat(format, name);
-	strcat(format, "\e[0m");
+	strcat(format, "\e[22m");
 	strcat(format, " ");
 	if (strlen(type) > 0)
 		strcat(format, "[");
@@ -73,8 +73,8 @@ static char			*format_string(char *name, char *alias, char *type)
 
 	if (!name)
 		name = "undefined";
-	size = alias ? (strlen(alias) + strlen(name) + strlen(type) + 6 + 8)
-	: (strlen(name) + strlen(type) + 3 + 8);
+	size = alias ? (strlen(alias) + strlen(name) + strlen(type) + 6 + 9)
+	: (strlen(name) + strlen(type) + 3 + 9);
 	if (strlen(type) > 0)
 		size += 2;
 	if (!(format = (char *)malloc(sizeof(*format) * (size + 1))))
